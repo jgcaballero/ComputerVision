@@ -13,12 +13,12 @@ def correct_ilumination(my_image):
     height, width = my_image.shape
     result = np.zeros(my_image.shape, my_image.dtype)
     
-    alpha = 1.0 # Simple contrast control
-    beta = 0    # Simple brightness control
+    highest = 1.0 
+    lowest = 0    
     
     for y in range(my_image.shape[0]):
         for x in range(my_image.shape[1]):
-            result[y,x] = np.clip(((my_image[y,x] - beta)/(alpha-beta)),0,255)
+            result[y,x] = np.clip(((my_image[y,x] - lowest)/(highest-lowest)),0,255)
     return result        
  
 while(True):
@@ -43,7 +43,7 @@ while(True):
     #floored_time = math.floor(elapsed_time)
     #if floored_time % n == 0:
         # print(floored_time)
-    #    cv2.imwrite("frame%d.jpg" % floored_time, frame)     # save frame as JPEG file      
+    #    cv2.imwrite("frame%d.jpg" % floored_time, frame)
 
     # 6. Display an illumination-corrected version of the gray level version of the image. To do this, map the
     # highest intensity found in the image to 1 and the lowest intensity to 0. Let max(I) and min(I) be the
@@ -58,15 +58,25 @@ while(True):
     frame2 = cv2.cvtColor(cap.read()[1], cv2.COLOR_BGR2GRAY)
     frame3 = cv2.absdiff(frame1, frame2)
     
-    maxNum = np.amax(frame3)
-    #print("MAX")
-    print(maxNum)
+    maximum = np.amax(frame3)
+    print('max in frame 3 ->', maximum)
+    n = 1 # take a picture every second
+    k = 5 # for a duration of 5 seconds after motion was detected
+    elapsed_time = time.time()-start
+    floored_time = math.floor(elapsed_time)
     
-    if maxNum > 35:
+    print(floored_time)
+    
+    if maximum > 50:
         print("Motion Detected!")
-        
- 
-
+        timeout = time.time() + k
+        print('time', time.time())
+        print('time out' , timeout)
+        while (floored_time % n == 0):
+            if time.time() > timeout:
+                break
+            else: 
+                cv2.imwrite("frame%d.jpg" % floored_time, frame)    
     
     count+=1
  
