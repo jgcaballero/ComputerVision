@@ -29,27 +29,27 @@ while(True):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # 2. Displays the negative of the gray level version of the img.
-    #neg_gray = cv2.bitwise_not(gray)
+    neg_gray = cv2.bitwise_not(gray)
    
     # 3. Display the mirrored version of the original color image.
-    #mirror = cv2.flip(frame, flipCode=1)
+    mirror = cv2.flip(frame, flipCode=1)
 
     # 4. Display the original color image upside down.
-    #flip180 = cv2.flip(frame, flipCode=-1)
+    flip180 = cv2.flip(frame, flipCode=-1)
 
     # 5. Write to a file one frame every n seconds, where n is a user-supplied parameter.
-    #n = 8
-    #elapsed_time = time.time()-start
-    #floored_time = math.floor(elapsed_time)
-    #if floored_time % n == 0:
-        # print(floored_time)
-    #    cv2.imwrite("frame%d.jpg" % floored_time, frame)
+    n = 8
+    elapsed_time = time.time()-start
+    floored_time = math.floor(elapsed_time)
+    if floored_time % n == 0:
+        print(floored_time)
+        cv2.imwrite("frame%d.jpg" % floored_time, frame)
 
     # 6. Display an illumination-corrected version of the gray level version of the image. To do this, map the
     # highest intensity found in the image to 1 and the lowest intensity to 0. Let max(I) and min(I) be the
     # highest and lowest intensities in image I, then the corrected image C is given by
     # C[i][j] = I[i][j] − min(I) / max(I) − min(I)
-    #corrected_gray = correct_ilumination(gray)
+    corrected_gray = correct_ilumination(gray)
     
     # 7. Build a motion detector. Your program should write to a file one frame every n seconds for k seconds
     #after motion is detected, where n and k are user-supplied parameters. It is up to you to decide what
@@ -59,7 +59,7 @@ while(True):
     frame3 = cv2.absdiff(frame1, frame2)
     
     maximum = np.amax(frame3)
-    print('max in frame 3 ->', maximum)
+    print('max in frame 3', maximum)
     n = 1 # take a picture every second
     k = 5 # for a duration of 5 seconds after motion was detected
     elapsed_time = time.time()-start
@@ -70,8 +70,8 @@ while(True):
     if maximum > 50:
         print("Motion Detected!")
         timeout = time.time() + k
-        print('time', time.time())
-        print('time out' , timeout)
+        #print('time', time.time())
+        #print('time out' , timeout)
         while (floored_time % n == 0):
             if time.time() > timeout:
                 break
@@ -83,8 +83,7 @@ while(True):
     # Display the resulting frame
     # Pass parameter to change image e.g gray instead of frame.
     # cv2.imshow('frame',frame)
-    cv2.imshow('frame',frame1)
-    cv2.imshow('frame',frame2)
+    cv2.imshow('frame',gray)
     # cv2.imshow('frame',neg_gray)
     # cv2.imshow('frame',mirror)
     # cv2.imshow('frame',flip180)
