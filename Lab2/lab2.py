@@ -58,9 +58,14 @@ def fix_dog():
 
 #Husky ✔️ 
 def fix_husky():
-    husky = cv2.imread('images/husky.jpg', 0) #histogram equalization
-    equ = cv2.equalizeHist(husky)
-    res = np.hstack((husky,equ))
+    husky = cv2.imread('images/husky.jpg') #histogram equalization
+    color = cv2.cvtColor(husky, cv2.COLOR_BGR2YUV)
+    color[:,:,0] = cv2.equalizeHist(color[:,:,0])
+    img_output = cv2.cvtColor(color, cv2.COLOR_YUV2BGR)
+    #gauss_blur = np.array([[1,2,1], [2,4,2], [1,2,1]])/16
+    #gauss_blur2 = np.array([[1,4,6,4,1], [4,16,24,16,4], [6,24,36,24,6], [4,16,24,16,4],[1,4,6,4,1]])/256
+    dst = cv2.filter2D(img_output,-1,img_output)
+    res = np.hstack((husky,dst))
     cv2.imshow('result',res) 
 
 #leopard
@@ -91,6 +96,7 @@ def fix_rose():
 
 
 fix_husky()
+
 
 
 k = cv2.waitKey(0)
