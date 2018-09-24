@@ -3,10 +3,10 @@ import cv2
 from matplotlib import pyplot as plt
 
 
-city = cv2.imread('images/city.jpg', 0)
-leopard = cv2.imread('images/leopard.jpg', 0)
-ny = cv2.imread('images/ny.jpg', 0)
 tricycle = cv2.imread('images/tricycle.jpg', 0)
+city = cv2.imread('images/city.jpg')
+gauss_blur = np.array([[1,2,1], [2,4,2], [1,2,1]])/16
+
 
 
 # ✔️  Cat fix using a box filter approach using a kernel of 3 by 3 and averaging the pixels
@@ -18,28 +18,42 @@ def fix_cat():
     cv2.imshow('result',res) 
 
 
-#Cheetah
+#Cheetah ✔️
 def fix_cheetah():
     cheetah = cv2.imread('images/cheetah.jpg', 0)
-    kernel = np.ones((3,3),np.float32)/9
+    kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
     dst = cv2.filter2D(cheetah,-1,kernel)
     res = np.hstack((cheetah,dst))
     cv2.imshow('result',res) 
     
 #Ctiy
+def fix_city():
+    city = cv2.imread('images/city.jpg')
+    kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
+    dst = cv2.filter2D(city,-1,kernel)
+    equ = cv2.equalizeHist(dst)
+    res = np.hstack((city,equ))
+    cv2.imshow('result',res) 
     
 #Deer
 def fix_deer():
     deer = cv2.imread('images/deer.jpg', 0)
-    equ = cv2.equalizeHist(deer)
-    res = np.hstack((deer,equ))
+    kernel = np.ones((3,3),np.float32)/9
+    dst = cv2.filter2D(deer,-1,kernel)
+    #blur = cv2.medianBlur(equ,5)
+    res = np.hstack((deer,dst))
+
     cv2.imshow('result',res) 
     
 #Dog ✔️ 
 def fix_dog():
-    dog = cv2.imread('images/dog.jpg', 0) #histogram equalization
-    equ = cv2.equalizeHist(dog)
-    res = np.hstack((dog,equ))
+    dog = cv2.imread('images/dog.jpg') #histogram equalization
+    color = cv2.cvtColor(dog, cv2.COLOR_BGR2YUV)
+    color[:,:,0] = cv2.equalizeHist(color[:,:,0])
+    img_output = cv2.cvtColor(color, cv2.COLOR_YUV2BGR)
+    gauss_blur2 = np.array([[1,4,6,4,1], [4,16,24,16,4], [6,24,36,24,6], [4,16,24,16,4],[1,4,6,4,1]])/256
+    dst = cv2.filter2D(img_output,-1,gauss_blur2)
+    res = np.hstack((dog,dst))
     cv2.imshow('result',res) 
 
 #Husky ✔️ 
@@ -50,11 +64,17 @@ def fix_husky():
     cv2.imshow('result',res) 
 
 #leopard
+def fix_leopard():
+    leopard = cv2.imread('images/leopard.jpg', 0)
+    kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
+    dst = cv2.filter2D(leopard,-1,kernel)
+    #equ = cv2.equalizeHist(leopard)
+    res = np.hstack((leopard,dst))
+    cv2.imshow('result',res) 
     
 #ny✔️
 def fix_ny():
     ny = cv2.imread('images/ny.jpg')
-    kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
     kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
     dst = cv2.filter2D(ny,-1,kernel)
     res = np.hstack((ny,dst))
@@ -70,10 +90,7 @@ def fix_rose():
 #tricycle
 
 
-fix_ny()
-#cv2.imshow('image',rose)
-#cv2.imshow('result',res) 
-#cv2.imshow('result',equ) 
+fix_husky()
 
 
 k = cv2.waitKey(0)
