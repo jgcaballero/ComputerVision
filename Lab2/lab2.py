@@ -2,13 +2,6 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-
-tricycle = cv2.imread('images/tricycle.jpg', 0)
-city = cv2.imread('images/city.jpg')
-gauss_blur = np.array([[1,2,1], [2,4,2], [1,2,1]])/16
-
-
-
 # ✔️  Cat fix using a box filter approach using a kernel of 3 by 3 and averaging the pixels
 def fix_cat():
     cat = cv2.imread('images/cat.jpg',0)
@@ -26,13 +19,12 @@ def fix_cheetah():
     res = np.hstack((cheetah,dst))
     cv2.imshow('result',res) 
     
-#Ctiy
+#City
 def fix_city():
     city = cv2.imread('images/city.jpg')
     kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
     dst = cv2.filter2D(city,-1,kernel)
-    equ = cv2.equalizeHist(dst)
-    res = np.hstack((city,equ))
+    res = np.hstack((city,dst))
     cv2.imshow('result',res) 
     
 #Deer
@@ -68,12 +60,11 @@ def fix_husky():
     res = np.hstack((husky,dst))
     cv2.imshow('result',res) 
 
-#leopard
+#leopard✔️
 def fix_leopard():
     leopard = cv2.imread('images/leopard.jpg', 0)
     kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
     dst = cv2.filter2D(leopard,-1,kernel)
-    #equ = cv2.equalizeHist(leopard)
     res = np.hstack((leopard,dst))
     cv2.imshow('result',res) 
     
@@ -85,17 +76,50 @@ def fix_ny():
     res = np.hstack((ny,dst))
     cv2.imshow('result',res) 
     
-#rose 
+#rose ✔️
 def fix_rose():
     rose = cv2.imread('images/rose.jpg') #median blur to fix salt and pepper
-    blur = cv2.medianBlur(rose,5)
-    res = np.hstack((rose,blur))
+    color = cv2.cvtColor(rose, cv2.COLOR_BGR2YUV)
+    color[:,:,0] = median_filter(color[:,:,0])
+    img_output = cv2.cvtColor(color, cv2.COLOR_YUV2BGR)
+    kernel = np.ones((3,3),np.float32)/9
+    dst = cv2.filter2D(img_output,-1,kernel)
+    #med = cv2.medianBlur(rose,5)
+    res = np.hstack((rose,dst))
     cv2.imshow('result',res) 
+    
+def median_filter(img):
+    arr = np.zeros(9)
+    result = np.zeros(img.shape, img.dtype)
+
+    for y in range(1,img.shape[0]-1):
+        for x in range(1,img.shape[1]-1):
+            arr[0] = img[y-1,x-1]
+            arr[1] = img[y,x-1]
+            arr[2] = img[y+1,x-1]
+            arr[3] = img[y-1,x]
+            arr[4] = img[y,x]
+            arr[5] = img[y+1,x]
+            arr[6] = img[y-1,x+1]
+            arr[7] = img[y,x+1]
+            arr[8] = img[y+1,x+1]
+
+            arr.sort()
+            result[y,x]=arr[4]
+            
+    return result
+            
 
 #tricycle
-
-
-fix_husky()
+def fix_tricycle():
+    tricycle = cv2.imread('images/tricycle.jpg')
+    kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
+    dst = cv2.filter2D(tricycle,-1,kernel)
+    res = np.hstack((tricycle,dst))
+    cv2.imshow('result',res) 
+    
+rose = cv2.imread('images/rose.jpg') #median blur to fix salt and pepper
+fix_rose()
 
 
 
