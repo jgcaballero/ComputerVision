@@ -1,10 +1,10 @@
 import numpy as np
 import cv2
-from matplotlib import pyplot as plt
+import time
 
 # ✔️  Cat fix using a box filter approach using a kernel of 3 by 3 and averaging the pixels
 def fix_cat():
-    cat = cv2.imread('images/cat.jpg',0)
+    cat = cv2.imread('images/cat.jpg')
     kernel = np.ones((3,3),np.float32)/9
     dst = cv2.filter2D(cat,-1,kernel)
     res = np.hstack((cat,dst))
@@ -30,7 +30,7 @@ def fix_city():
 #Deer
 def fix_deer():
     deer = cv2.imread('images/deer.jpg', 0)
-    kernel = np.ones((3,3),np.float32)/9
+    kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
     dst = cv2.filter2D(deer,-1,kernel)
     #blur = cv2.medianBlur(equ,5)
     res = np.hstack((deer,dst))
@@ -56,15 +56,18 @@ def fix_husky():
     img_output = cv2.cvtColor(color, cv2.COLOR_YUV2BGR)
     #gauss_blur = np.array([[1,2,1], [2,4,2], [1,2,1]])/16
     #gauss_blur2 = np.array([[1,4,6,4,1], [4,16,24,16,4], [6,24,36,24,6], [4,16,24,16,4],[1,4,6,4,1]])/256
-    dst = cv2.filter2D(img_output,-1,img_output)
-    res = np.hstack((husky,dst))
+    #dst = cv2.filter2D(img_output,-1,img_output)
+    res = np.hstack((husky,img_output))
     cv2.imshow('result',res) 
 
 #leopard✔️
 def fix_leopard():
-    leopard = cv2.imread('images/leopard.jpg', 0)
+    leopard = cv2.imread('images/leopard.jpg')
+    color = cv2.cvtColor(leopard, cv2.COLOR_BGR2YUV)
+    color[0,:,:] = cv2.equalizeHist(color[0,:,:])
+    img_output = cv2.cvtColor(color, cv2.COLOR_YUV2BGR)
     kernel = np.array([[0,-1,0], [-1,5,-1], [0,-1,0]])
-    dst = cv2.filter2D(leopard,-1,kernel)
+    dst = cv2.filter2D(img_output,-1,kernel)
     res = np.hstack((leopard,dst))
     cv2.imshow('result',res) 
     
@@ -118,10 +121,111 @@ def fix_tricycle():
     res = np.hstack((tricycle,dst))
     cv2.imshow('result',res) 
     
+def increase_image():
+    #husky = cv2.imread('images/husky.jpg',0) #histogram equalization
+    husky = np.array([[100,80,20,10], [100,90,30,10], [50,45,15,5], [40,30,10,0]])
 
-def decrease_img(img_to_resize):
+    inc = increase_img(husky)
+    result = inc_interpol_rows(inc)
+    result2 = inc_interpol_cols(result)
+    cv2.imshow('result',result2)
+
+    
+def increase_img(img):
+    #img = np.array([[100,80,20,10], [100,90,30,10], [50,45,15,5], [40,30,10,0]])
+    col = len(img)*2-1
+    row = len(img[0])*2-1
+    og = len(img[0])
+    #print(og)
+    #print(col, row)
+    result = np.zeros(shape=(col,row))
+    
+    for y in range(0,img.shape[0]):        
+        for x in range(0,img.shape[1]):
+            #print(y,x)
+            if(x == og-1):
+                #print('welp')
+                #print(img[y,x])
+                result[y*2,row-1] = img[y,x]
+            else:
+                #print(img[y,x])
+                #arr[0] = img[y,x]
+                #arr[1] = img[y,x+1]
+                result[y*2,x*2]=img[y,x]
+                
+    #(result)
+    return result
+    
+def inc_interpol_rows(img):
+    #print(img)
+    arr = np.zeros(3)
+    length = len(img[0])
+
+    
+    for y in range(0,img.shape[0],2): 
+        for x in range(0,img.shape[1],2):
+            if(x != length-1):
+                arr[0] = img[y,x]
+                arr[1] = img[y,x+2]
+                resX = apply_linear_interpolation(x+1,x,arr[0],x+2,arr[1])
+                img[y,x+1] = resX 
+            else:
+                pass
+                
+    #print(img)
+    return img
+
+
+def inc_interpol_cols(img):
+    #print('fuuuuuuuuuuuuuuuu')
+    #print(img)
+    arr = np.zeros(2)
+    length = len(img[0])
+    length2 = len(img[1])
+    print('LEEEEEEEEEEENGTH',length)
+    print('LEEEEEEEEEEENGTH1',length2)
+    
+    for y in range(0,img.shape[0],2): 
+        for x in range(0,img.shape[1]):
+            if(y != length-2):
+                #print(y,x)
+                arr[0] = img[y,x]
+                arr[1] = img[y+2,x]
+                resY = apply_linear_interpolation(x,x,arr[0],x,arr[1])
+                #print('RESY IS : ' , resY)
+                img[y+1,x] = resY
+                #print(arr)
+            else:
+                pass
+                #print('ignore last val!')
+    
+    #print(img)
+                
+
+            
+
+            
+def apply_linear_interpolation (x, x1, y1, x2, y2):
+    #print(x, x1, y1, x2, y2)
+    isZero = x2 - x1
+    if(isZero == 0):
+        #print('ZEROOOOOOOOOOOOOOOOOOOOOES')p
+        y = (y1 + y2)//2
+        #print(y)
+    else:
+        #print('YYYYYYYY THOOOO')
+        y = y1 + (x - x1)*((y2-y1)//(x2-x1))
+    
+    return y
+
+    
+def decrease_image():
+    cat = cv2.imread('images/cat.jpg',0)
+    dec = decrease_img(cat, 2)
+    cv2.imshow('result',dec)
+
+def decrease_img(img_to_resize, box_size):
     img = img_to_resize/255
-    box_size = 2
     arr = np.zeros(box_size*box_size)
     col = len(img)//box_size
     row = len(img[0])//box_size
@@ -142,12 +246,27 @@ def decrease_img(img_to_resize):
             
     return result
 
-cat = cv2.imread('images/cat.jpg',0)
-img = np.array([[0,1,0], [1,5,1], [0,1,0]])
+#Uncomment the following lines in order to trigger one of the fixes.
+start = time.time()
+count=0
 
-dec = decrease_img(cat)
-cv2.imshow('result',dec)
+#fix_cat()
+#fix_cheetah()
+#fix_city()
+#fix_deer()
+#fix_dog()
+#fix_husky()
+#fix_leopard()
+#fix_ny()
+#fix_rose()
+#fix_tricycle()
 
+increase_image()
+
+# Making the picture smaaaaaalleeer!
+#decrease_image()
+elapsed_time = time.time()-start
+print(elapsed_time)
 
 
 k = cv2.waitKey(0)
