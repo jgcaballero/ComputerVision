@@ -118,8 +118,35 @@ def fix_tricycle():
     res = np.hstack((tricycle,dst))
     cv2.imshow('result',res) 
     
-rose = cv2.imread('images/rose.jpg') #median blur to fix salt and pepper
-fix_rose()
+
+def decrease_img(img_to_resize):
+    img = img_to_resize/255
+    box_size = 2
+    arr = np.zeros(box_size*box_size)
+    col = len(img)//box_size
+    row = len(img[0])//box_size
+    result = np.zeros(shape=(col,row))
+
+    for y in range(0,img.shape[0],box_size):        
+        for x in range(0,img.shape[1],box_size):          
+           # print(y , x)
+           # print(y , x+1)
+           # print(y+1 , x)
+           # print(y+1 , x+1)
+            arr[0] = img[y,x]
+            arr[1] = img[y,x+1]
+            arr[2] = img[y+1,x]
+            arr[3] = img[y+1,x+1]
+            #print(y//box_size,x//box_size)
+            result[y//2,x//2]=sum(arr)/(box_size*box_size)
+            
+    return result
+
+cat = cv2.imread('images/cat.jpg',0)
+img = np.array([[0,1,0], [1,5,1], [0,1,0]])
+
+dec = decrease_img(cat)
+cv2.imshow('result',dec)
 
 
 
