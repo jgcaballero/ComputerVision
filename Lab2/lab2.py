@@ -122,30 +122,23 @@ def fix_tricycle():
     cv2.imshow('result',res) 
     
 def increase_image():
-    #husky = cv2.imread('images/husky.jpg',0) #histogram equalization
-    husky = np.array([[100,80,20,10], [100,90,30,10], [50,45,15,5], [40,30,10,0]])
-
-    inc = increase_img(husky)
-    result = inc_interpol_rows(inc)
-    result2 = inc_interpol_cols(result)
-    cv2.imshow('result',result2)
-
+    cat = cv2.imread('images/cat.jpg')
+    cat_bw = cv2.cvtColor(cat, cv2.COLOR_BGR2GRAY)/255.0
+    inc = increase_img(cat_bw)
+    result = inc_interpol(inc)
+    result2 = inc_cols(result)
+    print(result2)
+    cv2.imshow("resize",result2)
     
 def increase_img(img):
-    #img = np.array([[100,80,20,10], [100,90,30,10], [50,45,15,5], [40,30,10,0]])
-    col = len(img)*2-1
-    row = len(img[0])*2-1
-    og = len(img[0])
-    #print(og)
-    #print(col, row)
+    col = len(img)*2
+    row = len(img[0])*2
+    og = len(img[0])   
     result = np.zeros(shape=(col,row))
     
     for y in range(0,img.shape[0]):        
         for x in range(0,img.shape[1]):
-            #print(y,x)
             if(x == og-1):
-                #print('welp')
-                #print(img[y,x])
                 result[y*2,row-1] = img[y,x]
             else:
                 #print(img[y,x])
@@ -156,41 +149,44 @@ def increase_img(img):
     #(result)
     return result
     
-def inc_interpol_rows(img):
+def inc_interpol(img):
     #print(img)
     arr = np.zeros(3)
     length = len(img[0])
 
     
-    for y in range(0,img.shape[0],2): 
-        for x in range(0,img.shape[1],2):
+    for y in range(1,img.shape[0],-1): 
+        for x in range(1,img.shape[1],-1):
             if(x != length-1):
                 arr[0] = img[y,x]
                 arr[1] = img[y,x+2]
+                #arr[2] = img[y+2,x]
                 resX = apply_linear_interpolation(x+1,x,arr[0],x+2,arr[1])
-                img[y,x+1] = resX 
+                #resY = apply_linear_interpolation(x,x,arr[0],x,arr[2])
+                #print(resY)
+                img[y,x+1] = resX
+                #[y+1,x] = resY
+                #print(arr)
             else:
                 pass
+                #print('ignore last val!')
                 
     #print(img)
     return img
 
 
-def inc_interpol_cols(img):
+def inc_cols(img):
     #print('fuuuuuuuuuuuuuuuu')
     #print(img)
     arr = np.zeros(2)
     length = len(img[0])
-    length2 = len(img[1])
-    print('LEEEEEEEEEEENGTH',length)
-    print('LEEEEEEEEEEENGTH1',length2)
     
     for y in range(0,img.shape[0],2): 
         for x in range(0,img.shape[1]):
-            if(y != length-2):
+            if(y != length-1):
                 #print(y,x)
                 arr[0] = img[y,x]
-                arr[1] = img[y+2,x]
+                arr[1] = img[y+1,x]
                 resY = apply_linear_interpolation(x,x,arr[0],x,arr[1])
                 #print('RESY IS : ' , resY)
                 img[y+1,x] = resY
@@ -198,7 +194,8 @@ def inc_interpol_cols(img):
             else:
                 pass
                 #print('ignore last val!')
-    
+            
+    return img
     #print(img)
                 
 
@@ -208,10 +205,10 @@ def inc_interpol_cols(img):
 def apply_linear_interpolation (x, x1, y1, x2, y2):
     #print(x, x1, y1, x2, y2)
     isZero = x2 - x1
-    if(isZero == 0):
-        #print('ZEROOOOOOOOOOOOOOOOOOOOOES')p
+    if(isZero == 0 ):
+        #print('ZEROOOOOOOOOOOOOOOOOOOOOES')
         y = (y1 + y2)//2
-        #print(y)
+       # print(y)
     else:
         #print('YYYYYYYY THOOOO')
         y = y1 + (x - x1)*((y2-y1)//(x2-x1))
