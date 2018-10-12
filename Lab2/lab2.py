@@ -247,7 +247,7 @@ def decrease_img(img_to_resize, box_size):
 start = time.time()
 count=0
 
-#fix_cat()
+fix_cat()
 #fix_cheetah()
 #fix_city()
 #fix_deer()
@@ -258,7 +258,7 @@ count=0
 #fix_rose()
 #fix_tricycle()
 
-increase_image()
+#increase_image()
 
 # Making the picture smaaaaaalleeer!
 #decrease_image()

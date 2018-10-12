@@ -34,37 +34,70 @@ def real_value_indexing(): #✔️
     
     print(counter/iterations)
     
-def triangle():
+def triangle(img):
     #0,0 0,1 0,2
     #1,0 1,1
     #2,0   
     #        0,2
     #    1,1 1,2
     #2.0 2,1 2,2
-    a = np.array([[1,2,3],
-                  [4,5,6], 
-                  [7,8,9]])
     
-    triangle2 = np.full_like(a, 0)
+    img2 = np.array([[1,2,3,4,5,6,7,8,9,10],
+                  [1,2,3,4,5,6,7,8,9,10],
+                  [1,2,3,4,5,6,7,8,9,10]])
+    
+    triangle2 = np.full_like(img, 0)
         
-    row = round((a.shape[0]/2)+.5)
-    col = round((a.shape[1]/2)+.5)
+    row = img.shape[0]
+    col = img.shape[1]
+    print(img)
     
-    for y in range (0,row+1):
-        for x in range (0,col+1):
-            print(a[y,x])
-            triangle2[y,x] = a[y,x]
+    print('row', row)
+    print('col', col)
+    
+    for y in range (1,row):
+        for x in range (1,col):
+            #print(y,x)
+            #print(img[y,x])
+            #triangle2[y,x] = img[y,x]
             if(x == col):
-                print('DIS', a[y][x])
+                triangle2[y,x] = img[y,x]
+                continue
             else:
-                a[y,x] = 0
-        col -= 1
+                triangle2[y,x] = img[y,x]
+                img[y,x] = 0
+        col -= round(img.shape[1]/img.shape[0])
+        print('res', round(img.shape[1]/img.shape[0]))
+
+        
+        #print('col', col)
+        #print('row', row)
         
         
     print('==')
-    print(a)
+    print(img)
     print('==')
     print(triangle2)
     
-triangle()
+    #return triangle2
+    return img, triangle2
+  
+def wat():
+    print("wat")
+    img = cv2.imread('images/banner_small.jpg',1)
+    #triangle()
+    triangle1, triangle2 = triangle(img)
+    #triangle2 = triangle(img)
+    cv2.imshow('image',triangle1)
+    cv2.imshow('image2',triangle2)
+    
+
+wat()
+
+k = cv2.waitKey(0)
+if k == 27:         # wait for ESC key to exit
+    cv2.destroyAllWindows()
+elif k == ord('s'): # wait for 's' key to save and exit
+   cv2.destroyAllWindows()
+   
 #real_value_indexing()
