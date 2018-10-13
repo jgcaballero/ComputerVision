@@ -34,65 +34,33 @@ def real_value_indexing(): #✔️
     
     print(counter/iterations)
     
-def triangle(img):
-    #0,0 0,1 0,2
-    #1,0 1,1
-    #2,0   
-    #        0,2
-    #    1,1 1,2
-    #2.0 2,1 2,2
-    
-    img2 = np.array([[1,2,3,4,5,6,7,8,9,10],
-                  [1,2,3,4,5,6,7,8,9,10],
-                  [1,2,3,4,5,6,7,8,9,10]])
-    
+def triangle(img):    
     triangle2 = np.full_like(img, 0)
         
     row = img.shape[0]
     col = img.shape[1]
-    print(img)
-    
-    print('row', row)
-    print('col', col)
+    slope = round(img.shape[1]/img.shape[0])
     
     for y in range (1,row):
         for x in range (1,col):
-            #print(y,x)
-            #print(img[y,x])
-            #triangle2[y,x] = img[y,x]
             if(x == col):
                 triangle2[y,x] = img[y,x]
                 continue
             else:
                 triangle2[y,x] = img[y,x]
                 img[y,x] = 0
-        col -= round(img.shape[1]/img.shape[0])
-        print('res', round(img.shape[1]/img.shape[0]))
+        col -= slope
 
-        
-        #print('col', col)
-        #print('row', row)
-        
-        
-    print('==')
-    print(img)
-    print('==')
-    print(triangle2)
-    
-    #return triangle2
     return img, triangle2
   
-def wat():
-    print("wat")
+def demo():
     img = cv2.imread('images/banner_small.jpg',1)
-    #triangle()
     triangle1, triangle2 = triangle(img)
-    #triangle2 = triangle(img)
     cv2.imshow('image',triangle1)
     cv2.imshow('image2',triangle2)
     
 
-wat()
+demo()
 
 k = cv2.waitKey(0)
 if k == 27:         # wait for ESC key to exit
