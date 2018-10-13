@@ -1,6 +1,8 @@
 import numpy as np
 from PIL import Image
 import pylab as plt
+plt.switch_backend('TKAgg')
+
 
 def transform(H,fp):
     # Transforming point fp according to H
