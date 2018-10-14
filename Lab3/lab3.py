@@ -6,28 +6,34 @@ import pylab as plt
 plt.switch_backend('TKAgg')
 
 #✔️
-def real_value_indexing(): #✔️
+def real_value_indexing(img): #✔️
     
     r0 = 1
     r1 = 1
-    c0 = 2
-    c1 = 2
+    c0 = 20
+    c1 = 20
     
     counter = 0
     iterations = 0;
     
-    a = np.array([[1,2,3],
+    img2 = np.array([[1,2,3],
                   [4,5,6], 
                   [7,8,9]])
 
+    start = time.time()
 
     for y in range (r0, c0+1):
         for x in range (r1, c1+1):
-            counter += a[y,x]
+            counter += img[y,x]
             iterations += 1
-            print(a[y,x])  
+            print(img[y,x])  
     
-    print(counter/iterations)
+    print('Counter', counter)
+    print('iterations', iterations)
+    print('Result', counter/iterations)
+    
+    elapsed_time = time.time()-start
+    print('Elapsed time: {0:.2f} '.format(elapsed_time)) 
     
 def triangle(img):    
     triangle2 = np.full_like(img, 0)
@@ -70,8 +76,8 @@ def forward_mapping():
     y2 = [0,im1.shape[1]-1,0]
     fp2 = np.vstack((x2,y2))
     
-    im1 = np.fliplr(im1)
-    im1 = np.flipud(im1)
+#    im1 = np.fliplr(im1)
+#    im1 = np.flipud(im1)
     
     im2 = np.array(triangle2, dtype=np.uint8)
     plt.figure(1)
@@ -102,6 +108,8 @@ def forward_mapping():
     print('fp', fp2)
     print('tp', tp2)
     
+    start = time.time()
+
     #Using pseudoinverse
     # Generating homogeneous coordinates
     fph = np.vstack((fp,np.ones(fp.shape[1])))
@@ -129,28 +137,26 @@ def forward_mapping():
     row_vect = ind//im2.shape[1]
     col_vect = ind%im2.shape[1]
     coords = np.vstack((row_vect,col_vect))
-    print('coords', coords)
     
     new_coords = transform(H,coords).astype(np.int)
     new_coords[new_coords<0] = 255
     new_coords[0,new_coords[0]>max_row] = max_row             
     new_coords[1,new_coords[1]>max_col] = max_col    
-    print('new_coords', new_coords)
     target_im = source_im
     
-    print('---------------------------')
-    for y in range(im2.shape[0]):
-        for x in range(im2.shape[1]):
-            if(np.dot(im2[y,x],im2[y,x]) == 0 ):
-                im2 = np.delete(im2, im2[y,x])
-    print('---------------------------')
-
-    print('---------------------------')
-    for y in range(im1.shape[0]):
-        for x in range(im1.shape[1]):
-            if(np.dot(im1[y,x],im1[y,x]) == 0 ):
-                im1 = np.delete(im1, im1[y,x])
-    print('---------------------------')
+#    print('---------------------------')
+#    for y in range(im2.shape[0]):
+#        for x in range(im2.shape[1]):
+#            if(np.dot(im2[y,x],im2[y,x]) == 0 ):
+#                np.delete(im2, im2[y,x])
+#    print('---------------------------')
+#
+#    print('---------------------------')
+#    for y in range(im1.shape[0]):
+#        for x in range(im1.shape[1]):
+#            if(np.dot(im1[y,x],im1[y,x]) == 0 ):
+#                np.delete(im1, im1[y,x])
+#    print('---------------------------')
     
     
     target_im[new_coords[0],new_coords[1],:] = im2[coords[0],coords[1],:]
@@ -160,15 +166,14 @@ def forward_mapping():
     row_vect2 = ind2//im2.shape[1]
     col_vect2 = ind2%im2.shape[1]
     coords2 = np.vstack((row_vect2,col_vect2))
-    print('coords', coords2)
     
     new_coords2 = transform(H2,coords2).astype(np.int)
     target_im = source_im
     target_im[new_coords2[0],new_coords2[1],:] = im1[coords2[0],coords2[1],:]
-    print('PLS', im1[coords2[0],coords2[1],:])
-    print('PLS', im1[coords2[0]])
     
-        
+    elapsed_time = time.time()-start
+    print('Elapsed time: {0:.2f} '.format(elapsed_time))  
+
     cv2.imshow('image',target_im)
 
     
@@ -245,7 +250,7 @@ def multi_point_warp(dest_im):
     p = np.asarray(plt.ginput(n=2, mouse_stop=2), dtype=np.float32)
     print(p)
     if(p.size == 0):
-        cv2.imshow('image',dest_im)
+        #cv2.imshow('image',dest_im)
         return dest_im, False
         
     print(p[0]-p[1])
@@ -299,13 +304,19 @@ def multi_point_warp(dest_im):
     
     return dest_im, True
 
+
+'''
+1) real value index
+'''
+#img = cv2.imread('images/cat.jpg',0)
+#source_im = np.array(Image.open('images/opencv.jpg'), dtype=np.uint8)
+#real_value_indexing(img)
+    
 '''
 2) Forward Mapping 
 '''
 #forward_mapping()
     
-
-
 '''
 4) Single Point Warp
 '''
@@ -318,19 +329,29 @@ def multi_point_warp(dest_im):
 '''
 dest_im = np.array(Image.open('images/opencv.jpg'), dtype=np.uint8)
 isTrue = True
+arr = []
 while isTrue:
-    dest_im, isTrue = single_point_warp(dest_im)
+#    for x in range(arr.shape[0]):
+    dest_im, isTrue = multi_point_warp(dest_im)
+    arr.append(dest_im)
     if(not isTrue):
-        break
+        for y in range(len(arr)):
+            image = "image"+str(y)
+            print('iteration #', y)
+            print('iteration #', arr[y])
+            cv2.imshow('image',arr[y])
+            cv2.waitKey(3000)
+#            plt.pause(.1)
+#            plt.draw()
 
     
 k = cv2.waitKey(0)
 if k == 27:         # wait for ESC key to exit
-    cv2.imshow('image',dest_im)
+    for y in range(arr.shape[0]):
+        print('iteration #', y)
+        cv2.imshow('image',arr[y])
     cv2.destroyAllWindows()
 elif k == ord('s'): # wait for 's' key to save and exit0
    cv2.imshow('image',dest_im)
    cv2.destroyAllWindows()
    
-   
-#real_value_indexing()
