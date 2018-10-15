@@ -76,15 +76,16 @@ def forward_mapping():
     y2 = [0,im1.shape[1]-1,0]
     fp2 = np.vstack((x2,y2))
     
-#    im1 = np.fliplr(im1)
-#    im1 = np.flipud(im1)
+    im1 = np.fliplr(im1)
+    im1 = np.flipud(im1)
     
     im2 = np.array(triangle2, dtype=np.uint8)
     plt.figure(1)
     plt.imshow(triangle2)
     plt.show()
         
-    source_im = np.array(Image.open('images/tennis.jpg'), dtype=np.uint8)
+    source_im1 = np.array(Image.open('images/tennis.jpg'), dtype=np.uint8)
+    source_im = cv2.cvtColor(source_im1, cv2.COLOR_BGR2RGB)
     plt.figure(2)
     plt.imshow(source_im)
     plt.show()
@@ -318,7 +319,7 @@ def multi_point_warp(dest_im):
 '''
 2) Forward Mapping 
 '''
-#forward_mapping()
+forward_mapping()
     
 '''
 4) Single Point Warp
