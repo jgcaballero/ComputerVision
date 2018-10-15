@@ -5,8 +5,8 @@ import time
 import pylab as plt
 plt.switch_backend('TKAgg')
 
-#✔️
-def real_value_indexing(img): #✔️
+
+def real_value_indexing(img):
     
     r0 = 1
     r1 = 1
@@ -189,8 +189,11 @@ def single_point_warp():
     plt.show()
     
     print("Click source and destination of warp point")
-    p = np.asarray(plt.ginput(n=2), dtype=np.float32)
+    p = np.asarray(plt.ginput(n=2, mouse_stop=2), dtype=np.float32)
     print(p)
+    if(p.size == 0):
+        #cv2.imshow('image',dest_im)
+        return 
     print(p[0]-p[1])
     plt.plot(p[:,0], p[:,1], color="blue")
     plt.plot(p[0][0], p[0][1],marker='x', markersize=3, color="red")
@@ -327,23 +330,17 @@ def multi_point_warp(dest_im):
 '''
 5) Multi Point Warp
 '''
-dest_im = np.array(Image.open('images/opencv.jpg'), dtype=np.uint8)
-isTrue = True
-arr = []
-while isTrue:
-#    for x in range(arr.shape[0]):
-    dest_im, isTrue = multi_point_warp(dest_im)
-    arr.append(dest_im)
-    if(not isTrue):
-        for y in range(len(arr)):
-            image = "image"+str(y)
-            print('iteration #', y)
-            print('iteration #', arr[y])
-            cv2.imshow('image',arr[y])
-            cv2.waitKey(200)
-#            plt.pause(.1)
-#            plt.draw()
-
+#dest_im = np.array(Image.open('images/opencv.jpg'), dtype=np.uint8)
+#isTrue = True
+#arr = []
+#while isTrue:
+##    for x in range(arr.shape[0]):
+#    dest_im, isTrue = multi_point_warp(dest_im)
+#    arr.append(dest_im)
+#    if(not isTrue):
+#        for y in range(len(arr)):
+#            cv2.imshow('image',arr[y])
+#            cv2.waitKey(100)
     
 k = cv2.waitKey(0)
 if k == 27:         # wait for ESC key to exit
