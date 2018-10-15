@@ -340,7 +340,7 @@ while isTrue:
             print('iteration #', y)
             print('iteration #', arr[y])
             cv2.imshow('image',arr[y])
-            cv2.waitKey(3000)
+            cv2.waitKey(200)
 #            plt.pause(.1)
 #            plt.draw()
 
