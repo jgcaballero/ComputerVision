@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from PIL import Image
+import pylab as plt
 
 #1A
 def grayscale():
@@ -90,6 +91,29 @@ def histogram_bars(img, n):
     h[n-1] += np.sum(b==n)
     return h
 
+def hist2():
+    img = cv2.imread('images/cat.jpg',0)
+    flat = img.flatten() 
+    n = 4
+    bar_hist = np.zeros(n)
+    raange = 255 // n
+
+    for x in range(len(flat)):
+        px = flat[x]
+        for i in range(1,n+1):
+            if(px <= raange*i):
+                bar_hist[i-1] += 1
+                break
+                
+    print(bar_hist)
+    
+def hist3():
+    I = cv2.imread('images/cat.jpg',0)
+    n = 4
+    plt.hist(I.ravel(),n,[0,256])
+    plt.show()
+                    
+    
 #6A
 def array_warp(I,W):
     rows = I.shape[0]
@@ -126,7 +150,8 @@ def knn(Xtrain, Ytrain, k, Xtest):
 
 
 
-gauss_filter()
+hist2()
+hist3()
 
 #real value
 #census transformation
