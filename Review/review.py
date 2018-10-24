@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from PIL import Image
 import pylab as plt
+import math
 
 
 #1A
@@ -108,6 +109,20 @@ def threshold():
     thr_frame = (gray_frame>np.median(gray_frame)).astype(np.uint8)*255
     res = np.hstack((gray_frame,thr_frame))
     cv2.imshow('frame',res) 
+    
+def threshold2():
+    img = cv2.imread('images/ny.jpg',0)
+    
+    for y in range(img.shape[0]):
+        for x in range(img.shape[1]):
+            if(img[y,x] > 128):
+                img[y,x] = 255
+            else:
+                img[y,x] = 0
+            
+    cv2.imshow('frame',img) 
+
+                        
 
 def edges():
     image = cv2.imread('images/ny.jpg')
@@ -150,6 +165,7 @@ def is_same_picture():
     else:
         print('NOT identical')
         
+#Generate pixel coordinates in the destination image         
 def coord_mat(rows,cols):
     ind = np.arange(rows*cols)
     row_mat  = (ind//cols).reshape((rows,cols))
@@ -190,7 +206,82 @@ def knn(Xtrain, Ytrain, k, Xtest):
         Ytest[:,i] = Ytrain[:,n]*w
     return Ytest
 
-edges()
+def integral():
+    I = np.ones((3,3))
+    print(I)
+    S = np.zeros((I.shape[0],I.shape[1]))
+    S[0:,0:] = np.cumsum(I,axis =1)
+    S = np.cumsum(S,axis = 0)
+    print('----------------')
+    print(S)
+    return I, S
+
+def sum_region(I,r0,c0,r1,c1):
+    return np.sum(I[r0:r1+1,c0:c1+1])
+
+def sum_region_integral(S,r0,c0,r1,c1):
+    return S[r1+1,c1+1] - S[r1+1,c0] - S[r0,c1+1] + S[r0,c0]
+
+def hor_grad(I):
+    kernel = np.ones((1,2))
+    kernel[0,0]=-1
+    return cv2.filter2D(I,-1,kernel,borderType=cv2.BORDER_REPLICATE)
+
+def ver_grad(I):    
+    kernel = np.ones((2,1)) 
+    kernel[0,0]=-1
+    return cv2.filter2D(I,-1,kernel,borderType=cv2.BORDER_REPLICATE)
+
+def grad_mag(vg,hg):    
+    return np.sqrt(vg*vg+hg*hg)
+
+def grad_angle(vg,hg): 
+    t = np.arctan2(vg,hg)*180/math.pi
+    t[t<0] = t[t<0] + 360
+    return t
+
+def hog(gm,ga,bars): 
+    hist = np.zeros(bars)
+    assigned_bar = (ga//(360/bars)+.5).astype(np.int)
+    for b in range(bars):
+        hist[b] = np.sum(gm[assigned_bar==b])
+
+def hist_of_grad():
+    I = np.random.randint(10, size=24).reshape((4,6)).astype(np.float)
+    
+    #calculate horizontal gradient
+    hg = hor_grad(I)
+    
+    #calculate vertical gradient
+    vg = ver_grad(I)
+    
+    print('hg', hg)
+    print('==========================')
+    print('vg', vg)
+    
+    #calculate magniture of gradients (square root)
+    gm = grad_mag(vg,hg)
+    
+    #gettubg angle of gradients with some obscure formula
+    ga = grad_angle(vg,hg)
+    
+    print(gm)
+    print('==========================')
+    print(ga)
+    
+    
+    h = hog(gm,ga,8)
+    print(h)
+    print('sum', np.sum(h))
+    print('sum2', np.sum(gm))
+
+I, S = integral()
+
+print(sum_region(I,0,0,2,2))
+print(sum_region_integral(S,0,0,2,2))
+
+hist_of_grad()
+
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
