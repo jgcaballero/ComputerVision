@@ -108,7 +108,7 @@ def threshold():
     gray_frame = cv2.imread('images/ny.jpg',0)
     thr_frame = (gray_frame>np.median(gray_frame)).astype(np.uint8)*255
     res = np.hstack((gray_frame,thr_frame))
-    cv2.imshow('frame',res) 
+    cv2.imshow('frame',res)
     
 def threshold2():
     img = cv2.imread('images/ny.jpg',0)
@@ -165,15 +165,15 @@ def is_same_picture():
     else:
         print('NOT identical')
         
+def swap_RB(img):
+    img =  img[:,:,[2,1,0]]
+        
 #Generate pixel coordinates in the destination image         
 def coord_mat(rows,cols):
     ind = np.arange(rows*cols)
     row_mat  = (ind//cols).reshape((rows,cols))
     col_mat  = (ind%cols).reshape((rows,cols))
     return row_mat, col_mat
-
-def swap_RB(img):
-    img =  img[:,:,[2,1,0]]
         
 #6A
 def array_warp(I,W):
