@@ -67,18 +67,51 @@ def enlarge():
     
 #e)
 def edges():
-    image = cv2.imread('images/quijote_lr.jpg',-1)
+    image = cv2.imread('images/quijote_lr.jpg')
     kernel_t = np.array([[-1,-1,-1],[-1,8,-1],[-1,-1,-1]])
     edgez =cv2.filter2D(image,-1,kernel_t)
     
     res = np.hstack((image,edgez))
     cv2.imshow('edges',res) 
+    
+def blue_bg():
+    image = cv2.imread('images/quijote_lr.jpg')
+    windmill = cv2.imread('images/windmill.jpg')
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    black = np.array([0,0,0])
+    
+    lower_blue = np.array([90,50,50])
+    upper_blue = np.array([110,255,255])
+    
+    mask = cv2.inRange(hsv, lower_blue, upper_blue)
+    res = cv2.bitwise_and(image,image, mask= mask)  
+    
+    print('res',res.shape)
+    print('wind',windmill.shape)
+    
+
+    for y in range(windmill.shape[0],0,-1):
+        for x in range(windmill.shape[1],0,-1):
+           if(np.all(res[y-101,x-184] == black)):
+               windmill[y-1,x-1] = image[y-101,x-184]
+
+                   
+               
+           
+
+    cv2.imshow('frame',image)
+    cv2.imshow('mask',mask)
+    cv2.imshow('res',res)
+    cv2.imshow('res',windmill)
+
+
+
 
 
     
 
     
-enlarge()
+blue_bg()
     
 cv2.waitKey(0)
 cv2.destroyAllWindows()
