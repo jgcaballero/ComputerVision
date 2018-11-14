@@ -2,11 +2,10 @@ import os
 from urllib.request import urlretrieve
 import numpy as np
 import time
-
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report,confusion_matrix
 from sklearn.neighbors import KNeighborsClassifier
-#from sklearn.preprocessing import StandardScaler  
+from sklearn.preprocessing import StandardScaler  
 from sklearn.decomposition import PCA
 
 
@@ -55,11 +54,7 @@ X_test = X_test.reshape((X_test.shape[0], -1))[:test_ex]
 y_train = y_train[:train_ex]
 y_test = y_test[:test_ex]
 
-#scaler = StandardScaler()  
-#scaler.fit(X_train)
-#
-#X_train = scaler.transform(X_train)  
-#X_test = scaler.transform(X_test)  
+
 
 
 pca = PCA(n_components=70, svd_solver='full')
@@ -69,7 +64,7 @@ X_test = pca.transform(X_test)
 
 start = time.time()
 
-MLP = MLPClassifier(solver='adam', activation='relu', alpha=0.0001, batch_size='auto',tol=0.000000001)
+MLP = MLPClassifier(solver='adam', activation='relu', alpha=1, batch_size='auto')
 MLP.fit(X_train, y_train)
 MLPredictions = MLP.predict(X_test)
 MLPAccuracy = np.sum(MLPredictions == y_test)/y_test.shape[0]
@@ -79,14 +74,14 @@ print(classification_report(y_test,MLPredictions))
 elapsed_time = time.time()-start
 print('Elapsed time: {0:.2f} '.format(elapsed_time)) 
 
-#start = time.time()
-#
-#knn = KNeighborsClassifier(n_neighbors=3, weights='uniform', algorithm='auto')
-#knn.fit(X_train, y_train)
-#KnnPredictions = knn.predict(X_test)
-#KnnAccuracy = np.sum(KnnPredictions == y_test)/y_test.shape[0]
-#print('KNN accuracy : ' , KnnAccuracy)
-#
-#elapsed_time = time.time()-start
-#print('Elapsed time: {0:.2f} '.format(elapsed_time)) 
+start = time.time()
 
+knn = KNeighborsClassifier(n_neighbors=5, weights='distance', algorithm='brute')
+knn.fit(X_train, y_train)
+KnnPredictions = knn.predict(X_test)
+KnnAccuracy = np.sum(KnnPredictions == y_test)/y_test.shape[0]
+print('KNN accuracy : ' , KnnAccuracy)
+
+elapsed_time = time.time()-start
+print('Elapsed time: {0:.2f} '.format(elapsed_time)) 
+print(classification_report(y_test, KnnPredictions))
