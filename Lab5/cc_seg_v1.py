@@ -56,9 +56,10 @@ thr=0.1
 
 #I  =  (cv2.imread('images/umbrela.jpg',1)/255)
 #I  =  (cv2.imread('images/shapes.jpg',1)/255)
-#I  =  (cv2.imread('images/shapes.jpg',1)/255)
-I  =  (cv2.imread('images/eyeshadow.jpg',1)/255)
-#I  =  (cv2.imread('mayon.jpg',1)/255)
+#I  =  (cv2.imread('images/tucan.jpg',1)/255)
+I  =  (cv2.imread('images/k.jpg',1)/255)
+#I  =  (cv2.imread('images/eyeshadow.jpg',1)/255)
+#I  =  (cv2.imread('images/fabela.jpg',1)/255)
 
 
 
