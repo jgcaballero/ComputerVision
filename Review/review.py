@@ -165,6 +165,8 @@ def is_same_picture():
     else:
         print('NOT identical')
         
+#CV BGR
+#PIL RGB
 def swap_RB(img):
     img =  img[:,:,[2,1,0]]
         
