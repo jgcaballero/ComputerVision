@@ -4,6 +4,11 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 from sklearn.model_selection import train_test_split
+from matplotlib import pyplot
+import time
+
+
+start = time.time()
 
 # dimensions of our images. label = bezos, gates 2 labels
 img_width, img_height = 128, 128
@@ -70,12 +75,24 @@ validation_generator = test_datagen.flow_from_directory(
         class_mode='binary')
 
 
-model.fit_generator(
+history = model.fit_generator(
         train_generator,
         steps_per_epoch=2000 // batch_size,
-        epochs=20,
+        epochs=5,
         validation_data=validation_generator,
         validation_steps=300 // 16)
+
+elapsed_time = time.time()-start
+print('Time it took to process img', elapsed_time)
+
+pyplot.plot(history.history['loss'])
+pyplot.plot(history.history['val_loss'])
+pyplot.title('model train vs validation loss')
+pyplot.ylabel('loss')
+pyplot.xlabel('epoch')
+pyplot.legend(['train', 'validation'], loc='upper right')
+pyplot.show()
+
 
 #model.fit(X_train, Y_train,
 #          batch_size=batch_size,
